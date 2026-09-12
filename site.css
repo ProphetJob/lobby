@@ -1,0 +1,971 @@
+/*
+  La vitrine partage la palette du produit : ce qu'on voit sur le site est ce
+  qu'on retrouve dans la fenetre (cahier §24). Aucune couleur ecrite ailleurs
+  qu'ici.
+
+  Trois teintes de plus, qui n'existent que sur le site : celles du logo. Elles
+  ne servent qu'a eclairer - un titre, un liseré, une lueur - et jamais a poser
+  du texte sur un fond.
+*/
+
+:root {
+  color-scheme: dark;
+
+  --ink: #f2f4f8;
+  --ink-soft: #a8b0be;
+  --ink-faint: #6b7280;
+  --ground: #0d0f13;
+  --ground-raised: #161920;
+  --ground-sunken: #090a0d;
+  --line: #262a33;
+  --line-strong: #39404d;
+
+  --accent: #5b8dff;
+  --accent-ink: #0b1220;
+  --good: #3ecf8e;
+  --bad: #f2604c;
+
+  /* Le logo : cyan, bleu, magenta. */
+  --flare-one: #22d3ee;
+  --flare-two: #5b8dff;
+  --flare-three: #ff2bd6;
+
+  /*
+    Les memes teintes, mais pour porter du texte. Sur le fond sombre elles se
+    valent ; sur le creme, le cyan du logo s'efface presque, d'ou trois teintes
+    plus profondes plus bas. Un titre doit se lire avant de briller.
+  */
+  --glow-one: var(--flare-one);
+  --glow-two: var(--flare-two);
+  --glow-three: var(--flare-three);
+
+  --veil: rgb(13 15 19 / 72%);
+  --glass: rgb(255 255 255 / 4%);
+  --shadow: 0 24px 60px rgb(0 0 0 / 55%);
+  --halo: 0 0 40px rgb(91 141 255 / 35%);
+
+  --radius: 14px;
+  --radius-large: 22px;
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --page: 1200px;
+}
+
+/*
+  Le theme clair est creme, jamais blanc : le meme choix que dans la fenetre.
+  Un blanc pur fatigue en quelques minutes et rend gris tout ce qu'on pose
+  dessus.
+*/
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --ink: #1f1b14;
+  --ink-soft: #544c3e;
+  --ink-faint: #8a8172;
+  --ground: #f3efe5;
+  --ground-raised: #fbf8f1;
+  --ground-sunken: #e8e2d4;
+  --line: #ddd5c5;
+  --line-strong: #c2b8a3;
+
+  --accent: #2f6bdb;
+  --accent-ink: #ffffff;
+  --good: #2f9d6b;
+  --bad: #cf4a37;
+
+  --glow-one: #0e7490;
+  --glow-two: #2f6bdb;
+  --glow-three: #a3138c;
+
+  --veil: rgb(251 248 241 / 78%);
+  --glass: rgb(31 27 20 / 3%);
+  --shadow: 0 24px 60px rgb(60 48 28 / 18%);
+  --halo: 0 0 40px rgb(47 107 219 / 22%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
+
+/*
+  La page occupe au moins la hauteur de la fenetre : sur les pages courtes -
+  activation, vie privee, journal vide - le pied flottait au milieu de l'ecran
+  avec du vide en dessous, et la page avait l'air inachevee.
+*/
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/*
+  Le fond : une grille lointaine, comme une salle vide eclairee par le bas.
+  Elle est posee sur le corps entier plutot que par section, pour que le
+  defilement la traverse sans couture.
+*/
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(transparent 96%, var(--line) 96%) 0 0 / 100% 64px,
+    linear-gradient(90deg, transparent 96%, var(--line) 96%) 0 0 / 64px 100%;
+  opacity: 0.5;
+  mask-image: radial-gradient(120% 80% at 50% 0%, rgb(0 0 0 / 65%), transparent 70%);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--accent);
+}
+
+:where(a, button, input):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.skip {
+  position: absolute;
+  top: -60px;
+  left: 12px;
+  z-index: 20;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  background: var(--ground-raised);
+  color: var(--ink);
+  text-decoration: none;
+  transition: top 120ms ease;
+}
+
+.skip:focus-visible {
+  top: 12px;
+}
+
+/* ----- l'entete ----- */
+
+/*
+  La barre tient toute la largeur de la fenetre : son trait la traverse d'un
+  bord a l'autre, comme une vraie barre de navigation. Seul son contenu reste
+  aligne sur la colonne du texte, faute de quoi le menu flotterait au milieu
+  d'un ecran large sans rien pour l'accrocher.
+*/
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--line);
+  background: var(--veil);
+  backdrop-filter: blur(14px);
+}
+
+/*
+  Le choix de la langue : un menu, parce qu'il y en aura plus de deux, et un
+  menu maison parce qu'une liste native n'accepte pas d'image et ne pourrait
+  donc montrer aucun drapeau.
+*/
+.picker {
+  position: relative;
+}
+
+.pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--ground-raised);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.pick:hover {
+  border-color: var(--line-strong);
+}
+
+.pick-menu {
+  position: absolute;
+  inset: calc(100% + 8px) 0 auto auto;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 180px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--ground-raised);
+  box-shadow: 0 14px 34px rgb(0 0 0 / 35%);
+}
+
+.pick-menu[hidden] {
+  display: none;
+}
+
+.pick-menu .choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pick-menu .choice:hover {
+  background: var(--ground-sunken);
+}
+
+/* Un lisere, sinon un drapeau clair pose sur un fond clair perd son bord. */
+.flag {
+  flex: none;
+  border-radius: 2px;
+  outline: 1px solid var(--line-strong);
+  outline-offset: -1px;
+}
+
+/*
+  Le bandeau traverse la fenetre d'un bord a l'autre, et son contenu aussi : le
+  brider sur la colonne du texte laissait, sur un ecran large, pres de 400 px de
+  vide a droite des boutons et un trou au milieu. Le logo tient le bord gauche,
+  les reglages le bord droit, les liens le centre.
+*/
+.top .bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 32px;
+}
+
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+}
+
+.links {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  gap: 22px;
+  font-size: 0.95rem;
+}
+
+.links a {
+  position: relative;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color 120ms ease;
+}
+
+.links a:hover {
+  color: var(--ink);
+}
+
+/* La page ouverte : posee par site.js, pour n'etre ecrite dans aucune page. */
+.links a[aria-current='page'] {
+  color: var(--ink);
+}
+
+.links a[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -7px;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--flare-one), var(--flare-three));
+}
+
+.switches {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.segment {
+  display: flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--glass);
+}
+
+.segment button {
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-faint);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.segment button[aria-pressed='true'] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.ghost {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--glass);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.ghost:hover {
+  color: var(--ink);
+}
+
+.ghost svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+/*
+  Le bouton des pages ne sert que sur un ecran etroit : sur le bureau, la rangee
+  de liens est deja la. Il porte la croix une fois le menu ouvert, comme le
+  bouton du theme porte l'astre qu'on obtiendra.
+*/
+.burger {
+  display: none;
+}
+
+.burger .cross {
+  display: none;
+}
+
+.top[data-menu='open'] .burger .bars {
+  display: none;
+}
+
+.top[data-menu='open'] .burger .cross {
+  display: initial;
+}
+
+/* Le soleil sur le theme sombre - ce qu'on obtiendra - et la lune sur le clair. */
+.moon {
+  display: none;
+}
+
+:root[data-theme='light'] .sun {
+  display: none;
+}
+
+:root[data-theme='light'] .moon {
+  display: initial;
+}
+
+/* ----- les sections ----- */
+
+main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 120px;
+  width: 100%;
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 0 24px 120px;
+}
+
+section {
+  scroll-margin-top: 90px;
+}
+
+.eyebrow {
+  margin-bottom: 14px;
+  color: var(--ink-faint);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+h2 {
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+}
+
+.lead {
+  max-width: 62ch;
+  margin-top: 14px;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+}
+
+.fine {
+  color: var(--ink-faint);
+  font-size: 0.88rem;
+}
+
+/* ----- l'accueil ----- */
+
+.hero {
+  position: relative;
+  padding-top: 96px;
+  text-align: center;
+}
+
+.hero h1 {
+  max-width: 18ch;
+  margin: 0 auto;
+  font-size: clamp(2.6rem, 7vw, 5rem);
+  font-weight: 750;
+  text-wrap: balance;
+}
+
+/*
+  Le nom du produit en lumiere : les trois teintes du logo, dans le texte
+  lui-meme. C'est le seul endroit ou elles portent des mots.
+*/
+.glow {
+  background: linear-gradient(100deg, var(--glow-one), var(--glow-two) 45%, var(--glow-three));
+  background-clip: text;
+  color: transparent;
+}
+
+.hero .lead {
+  margin: 22px auto 0;
+}
+
+.acts {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: 34px 0 14px;
+}
+
+.primary,
+.quiet {
+  display: inline-block;
+  padding: 13px 26px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: var(--halo);
+}
+
+.primary:hover,
+.quiet:hover {
+  transform: translateY(-2px);
+}
+
+.hero .fine {
+  margin-bottom: 60px;
+}
+
+/*
+  La lueur derriere le titre. Elle ne bouge pas pour decorer : elle donne au
+  fond la profondeur qu'une page plate n'a pas, et s'arrete des que le
+  systeme demande moins d'animation.
+*/
+.aurora {
+  position: absolute;
+  inset: -120px -40% auto;
+  height: 620px;
+  z-index: -1;
+  background:
+    radial-gradient(40% 60% at 30% 40%, rgb(34 211 238 / 22%), transparent 70%),
+    radial-gradient(40% 60% at 70% 30%, rgb(255 43 214 / 18%), transparent 70%),
+    radial-gradient(50% 70% at 50% 60%, rgb(91 141 255 / 22%), transparent 70%);
+  filter: blur(30px);
+  animation: drift 24s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  to {
+    transform: translate3d(0, 30px, 0) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora {
+    animation: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ----- les captures ----- */
+
+.shot {
+  position: relative;
+  margin: 0;
+  padding: 1px;
+  border-radius: var(--radius-large);
+  background: linear-gradient(140deg, var(--flare-one), var(--flare-two) 40%, var(--flare-three));
+  box-shadow: var(--shadow);
+}
+
+.shot img {
+  border-radius: calc(var(--radius-large) - 1px);
+}
+
+.shot.wide {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ----- la bande des launchers ----- */
+
+.strip {
+  text-align: center;
+}
+
+.launchers {
+  display: flex;
+  justify-content: center;
+  gap: 10px 28px;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-faint);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ----- les modules ----- */
+
+.module {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  align-items: center;
+  gap: 48px;
+  margin-top: 64px;
+}
+
+.module.reverse .words {
+  order: 2;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/*
+  L'acces anticipe : la pastille porte les teintes du logo. Elle dit ce qu'on
+  obtient aujourd'hui - un jeton gratuit - sans promettre ce que demain coutera.
+*/
+.badge.early {
+  margin-bottom: 18px;
+  border-color: transparent;
+  background:
+    linear-gradient(var(--ground), var(--ground)) padding-box,
+    linear-gradient(100deg, var(--flare-one), var(--flare-three)) border-box;
+  border: 1px solid transparent;
+  color: var(--ink);
+}
+
+.badge.ready::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--good);
+  box-shadow: 0 0 10px var(--good);
+}
+
+.module h3 {
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+}
+
+.module p {
+  margin-top: 12px;
+  color: var(--ink-soft);
+}
+
+.points {
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.points li {
+  position: relative;
+  padding: 7px 0 7px 26px;
+  color: var(--ink-soft);
+}
+
+.points li::before {
+  content: '';
+  position: absolute;
+  top: 17px;
+  left: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(140deg, var(--flare-one), var(--flare-three));
+}
+
+/* ----- les grilles de cartes ----- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 34px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grid li,
+.card {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--ground-raised);
+}
+
+.grid h3 {
+  font-size: 1.08rem;
+}
+
+.grid p {
+  margin-top: 8px;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+
+/* ----- telechargements ----- */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.card p {
+  color: var(--ink-soft);
+}
+
+.card .primary {
+  margin-top: auto;
+}
+
+/* ----- activation ----- */
+
+form {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 28px 0 0;
+}
+
+input {
+  flex: 1;
+  min-width: 280px;
+  padding: 14px 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--ground-raised);
+  color: var(--ink);
+  font: inherit;
+  letter-spacing: 0.1em;
+}
+
+button.primary {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+
+output {
+  display: block;
+  margin-top: 26px;
+  padding: 24px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--ground-raised);
+  box-shadow: var(--halo);
+}
+
+output h3 {
+  font-size: 1.05rem;
+}
+
+code {
+  display: block;
+  margin: 12px 0 18px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--ground-sunken);
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  word-break: break-all;
+}
+
+.fault {
+  margin-top: 16px;
+  color: var(--bad);
+}
+
+/* ----- journal ----- */
+
+/*
+  Le catalogue tient en une colonne etroite : etale sur toute la page, chaque
+  ligne trainait un nom a gauche et huit cents pixels de vide a droite.
+  L'identifiant tient le bord gauche, la taille le bord droit.
+*/
+.journal {
+  max-width: 680px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.journal li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: baseline;
+  gap: 6px 18px;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.journal .who {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/*
+  L'identifiant technique, a cote du nom : c'est celui que le Manager affiche.
+  Il se lit sans se disputer la vedette avec le nom, d'ou le gris et la taille.
+*/
+.ident {
+  margin-left: 8px;
+  color: var(--ink-faint);
+  font-size: 0.82em;
+  font-weight: 400;
+
+  /*
+    D'un seul tenant : le trait d'union de « games-ubisoft » offrait une coupure,
+    et sur un telephone l'identifiant se brisait en deux lignes. Coupe ainsi, il
+    ne se rapproche plus de rien dans le Manager.
+  */
+  white-space: nowrap;
+}
+
+.journal .version {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+  Largeur fixe : sans elle, « 2 Mo » et « 409,1 ko » ne font pas la meme
+  largeur, et la colonne des versions tremblait d'une ligne a l'autre.
+*/
+.journal .size {
+  min-width: 9ch;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* La note passe sous la ligne : elle est trop rare pour tenir une colonne. */
+.journal .note {
+  grid-column: 1 / -1;
+  font-size: 0.92rem;
+}
+
+.rank {
+  margin-top: 46px;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+
+.stamp {
+  margin-top: 10px;
+}
+
+/*
+  Les modules annonces : des pastilles, pas un tableau. Ils n'ont ni version ni
+  taille, et une ligne de journal a moitie vide aurait promis une precision
+  qu'on n'a pas encore.
+*/
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 680px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chips li {
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--glass);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+/* ----- pied ----- */
+
+.foot {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 40px 24px 70px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-faint);
+  text-align: center;
+}
+
+.mark-small {
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.foot a {
+  color: var(--ink-soft);
+}
+
+/* ----- ecrans etroits ----- */
+
+@media (max-width: 900px) {
+  .module,
+  .module.reverse {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .module.reverse .words {
+    order: 0;
+  }
+
+  /*
+    Les six liens ne tiennent plus en rangee. Ils ne s'en vont pas pour autant :
+    le bouton les deplie en colonne sous le bandeau, ou chaque page se prend au
+    doigt. Les faire defiler horizontalement aurait pousse les dernieres pages
+    hors de l'ecran sans rien pour le laisser deviner.
+  */
+  .burger {
+    display: grid;
+  }
+
+  .links {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px;
+    border-bottom: 1px solid var(--line);
+    background: var(--ground-raised);
+    box-shadow: var(--shadow);
+  }
+
+  .top[data-menu='open'] .links {
+    display: flex;
+  }
+
+  .links a {
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 1rem;
+  }
+
+  .links a[aria-current='page'] {
+    background: var(--ground-sunken);
+  }
+
+  /* Le trait sous la page courante ne veut rien dire dans une colonne. */
+  .links a[aria-current='page']::after {
+    display: none;
+  }
+
+  .switches {
+    margin-left: auto;
+  }
+
+  main {
+    gap: 88px;
+    padding-bottom: 88px;
+  }
+
+  .hero {
+    padding-top: 64px;
+  }
+}

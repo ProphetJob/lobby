@@ -1,0 +1,12 @@
+﻿accounts
+camera
+clips
+control
+desktop
+dock
+hardware
+lighting
+media
+obs
+remote
+touch-pad

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Lobby - Download</title>
+    <meta name="description" data-t="meta.description" content="The app every gamer needs." />
+    <link rel="icon" href="favicon.png" type="image/png" />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+
+  <body>
+    <!--
+      Page assemblee par build/site-pages.py : ce fichier est le gabarit, et le
+      contenu vit dans pages/<nom>.part.html. L'en-tete et le pied ne sont donc
+      ecrits qu'une fois, pour six pages qui ne peuvent pas diverger.
+
+      Chaque texte porte une cle - data-t - et vit dans /lang/<langue>.json :
+      ajouter une langue, c'est poser un fichier.
+    -->
+    <a class="skip" href="#main" data-t="nav.skip">Skip to content</a>
+
+    <header class="top">
+      <div class="bar">
+        <a class="mark" href="index.html" aria-label="Lobby">
+          <img src="favicon.png" alt="" width="28" height="28" />
+          <span>Lobby</span>
+        </a>
+
+        <!--
+          Les six pages du site, dans l'ordre ou on les lit : ce qu'est Lobby,
+          puis comment l'obtenir, puis le reste. La page ouverte est marquee par
+          site.js - aria-current - plutot qu'ecrite en dur dans six fichiers.
+        -->
+        <nav class="links" id="links">
+          <a href="index.html" data-t="nav.home">Home</a>
+          <a href="modules.html" data-t="nav.modules">Modules</a>
+          <a href="download.html" data-t="nav.download">Download</a>
+          <a href="activate.html" data-t="nav.activate">Activate</a>
+          <a href="privacy.html" data-t="nav.privacy">Privacy</a>
+          <a href="versions.html" data-t="nav.versions">Versions</a>
+        </nav>
+
+        <div class="switches">
+          <!--
+            Le menu se remplit depuis site.js : ajouter une langue, c'est poser
+            un fichier et ecrire son code, sans toucher a la page. Une rangee de
+            boutons aurait deborde des la troisieme langue, et une liste native
+            n'aurait pas pu montrer les drapeaux.
+          -->
+          <div class="picker">
+            <button
+              type="button"
+              id="lang"
+              class="pick"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-label="Language"
+              data-t-attr="aria-label:nav.language"
+            ></button>
+            <div id="lang-menu" class="pick-menu" role="listbox" hidden></div>
+          </div>
+
+          <button
+            type="button"
+            class="ghost"
+            id="theme"
+            aria-label="Switch theme"
+            data-t-attr="aria-label:nav.theme"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path
+                class="sun"
+                d="M12 4v2m0 12v2m8-8h-2M6 12H4m13.66-5.66-1.42 1.42M7.76 16.24l-1.42 1.42m11.32 0-1.42-1.42M7.76 7.76 6.34 6.34"
+              />
+              <circle class="sun" cx="12" cy="12" r="3.5" />
+              <path class="moon" d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" />
+            </svg>
+          </button>
+
+          <!--
+            Le bouton des pages, sur ecran etroit. Il ne parait que la ou la
+            rangee de liens ne tient plus : sans lui, les six pages seraient
+            hors d'atteinte au doigt.
+          -->
+          <button
+            type="button"
+            class="ghost burger"
+            id="menu"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="links"
+            aria-label="Menu"
+            data-t-attr="aria-label:nav.menu"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path class="bars" d="M4 7h16M4 12h16M4 17h16" />
+              <path class="cross" d="M6 6 18 18M18 6 6 18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="download" id="download">
+        <p class="eyebrow" data-t="download.eyebrow">Get Lobby</p>
+        <h1 data-t="download.title">One file to install everything</h1>
+
+        <div class="grid">
+          <article class="card">
+            <h3 data-t="download.pc">Windows PC</h3>
+            <p data-t="download.pc.text">
+              One installer. The Manager it lays down lets you pick your modules.
+            </p>
+            <a class="primary" href="downloads/Lobby-Setup.exe">Lobby-Setup.exe</a>
+            <p class="fine" data-t="download.pc.fine">Windows 10 1809 or newer, 64-bit.</p>
+
+            <!--
+              Ce que sert le site, en clair : la date de publication et
+              l'empreinte du fichier. Sans elle, deux installeurs du meme
+              numero de version ne se distinguent pas, et on reinstalle sans le
+              savoir celui d'hier. Rempli par site.js depuis api/build.json.
+            -->
+            <p class="fine stamp" id="build" hidden></p>
+          </article>
+
+          <article class="card">
+            <h3 data-t="download.android">Android</h3>
+            <p data-t="download.android.text">A real app, served straight from this site.</p>
+            <a class="primary" href="downloads/Lobby.apk">Lobby.apk</a>
+            <p class="fine" data-t="download.android.fine">
+              Android asks permission to install a downloaded file: open it, then allow this
+              source.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3 data-t="download.iphone">iPhone</h3>
+            <p data-t="download.iphone.text">
+              Open your PC address in Safari, then Add to Home Screen.
+            </p>
+            <p class="fine" data-t="download.iphone.fine">
+              Apple does not allow installing a downloaded file.
+            </p>
+          </article>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="foot">
+      <div class="bar">
+        <p><span class="mark-small">Lobby</span></p>
+        <p class="fine"><a href="versions.html" data-t="foot.journal">Version journal</a></p>
+      </div>
+    </footer>
+
+    <script src="site.js" type="module"></script>
+  </body>
+</html>
